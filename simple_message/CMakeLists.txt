@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 
 project(simple_message)
 
@@ -99,8 +99,8 @@ add_library(${PROJECT_NAME} ${SRC_FILES})
 # again, so for now, manually managing it all is an OK trade-off
 target_compile_definitions(${PROJECT_NAME} PUBLIC
   SIMPLE_MESSAGE_USE_ROS SIMPLE_MESSAGE_LINUX)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} $<$<BOOL:${WIN32}>:Ws2_32.lib>)
+ament_target_dependencies(${PROJECT_NAME} ${catkin_LIBRARIES})
+ament_target_dependencies(${PROJECT_NAME} $<$<BOOL:${WIN32}>:Ws2_32.lib>)
 add_dependencies(${PROJECT_NAME} ${industrial_msgs_EXPORTED_TARGETS})
 
 # ALTERNATIVE LIBRARY (DIFFERENT ENDIAN)
@@ -109,8 +109,8 @@ add_library(${PROJECT_NAME}_bswap ${SRC_FILES})
 # NOTE: keep these in-sync with the lists in 'cmake/platform_build_flags.cmake'
 target_compile_definitions(${PROJECT_NAME}_bswap PUBLIC
   SIMPLE_MESSAGE_USE_ROS SIMPLE_MESSAGE_LINUX BYTE_SWAPPING)
-target_link_libraries(${PROJECT_NAME}_bswap ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_bswap $<$<BOOL:${WIN32}>:Ws2_32.lib>)
+ament_target_dependencies(${PROJECT_NAME}_bswap ${catkin_LIBRARIES})
+ament_target_dependencies(${PROJECT_NAME}_bswap $<$<BOOL:${WIN32}>:Ws2_32.lib>)
 add_dependencies(${PROJECT_NAME}_bswap ${industrial_msgs_EXPORTED_TARGETS})
 
 # ALTERNATIVE LIBRARY (64-bit floats)
@@ -119,8 +119,8 @@ add_library(${PROJECT_NAME}_float64 ${SRC_FILES})
 # NOTE: keep these in-sync with the lists in 'cmake/platform_build_flags.cmake'
 target_compile_definitions(${PROJECT_NAME}_float64 PUBLIC
   SIMPLE_MESSAGE_USE_ROS SIMPLE_MESSAGE_LINUX FLOAT64)
-target_link_libraries(${PROJECT_NAME}_float64 ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_float64 $<$<BOOL:${WIN32}>:Ws2_32.lib>)
+ament_target_dependencies(${PROJECT_NAME}_float64 ${catkin_LIBRARIES})
+ament_target_dependencies(${PROJECT_NAME}_float64 $<$<BOOL:${WIN32}>:Ws2_32.lib>)
 add_dependencies(${PROJECT_NAME}_float64 ${industrial_msgs_EXPORTED_TARGETS})
 
 
@@ -129,19 +129,19 @@ add_dependencies(${PROJECT_NAME}_float64 ${industrial_msgs_EXPORTED_TARGETS})
 if(CATKIN_ENABLE_TESTING)
     catkin_add_gtest(utest ${UTEST_SRC_FILES})
     target_compile_definitions(utest PRIVATE TEST_PORT_BASE=11000)
-    target_link_libraries(utest ${PROJECT_NAME})
+    ament_target_dependencies(utest ${PROJECT_NAME})
 
     catkin_add_gtest(utest_byte_swapping ${UTEST_SRC_FILES})
     target_compile_definitions(utest_byte_swapping PRIVATE TEST_PORT_BASE=12000)
-    target_link_libraries(utest_byte_swapping ${PROJECT_NAME}_bswap)
+    ament_target_dependencies(utest_byte_swapping ${PROJECT_NAME}_bswap)
 
     catkin_add_gtest(utest_float64 ${UTEST_SRC_FILES})
     target_compile_definitions(utest_float64 PRIVATE TEST_PORT_BASE=13000 FLOAT64)
-    target_link_libraries(utest_float64 ${PROJECT_NAME}_float64)
+    ament_target_dependencies(utest_float64 ${PROJECT_NAME}_float64)
 
     catkin_add_gtest(utest_udp ${UTEST_SRC_FILES})
     target_compile_definitions(utest_udp PRIVATE TEST_PORT_BASE=15000 UDP_TEST)
-    target_link_libraries(utest_udp ${PROJECT_NAME})
+    ament_target_dependencies(utest_udp ${PROJECT_NAME})
 endif()
 
 # unfortunately this will have to be installed, but the linker will remove it

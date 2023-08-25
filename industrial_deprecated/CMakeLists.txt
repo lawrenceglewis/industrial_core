@@ -1,10 +1,7 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 
 project(industrial_deprecated)
 
-find_package(catkin REQUIRED COMPONENTS)
+find_package(ament_cmake REQUIRED)
 
-catkin_package(
-  CATKIN_DEPENDS
-)
-
+ament_package()

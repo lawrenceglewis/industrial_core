@@ -9,7 +9,7 @@
 # deterministic, they are replicated here.
 
 # with plain CMake, we'd use target_compile_definitions(..) and then
-# target_link_libraries(..) with EXPORT(..)-ed targets, but that's not possible
+# ament_target_dependencies(..) with EXPORT(..)-ed targets, but that's not possible
 # right now with Catkin, so we use this work-around.
 
 set(simple_message_DEFINITIONS         SIMPLE_MESSAGE_USE_ROS;SIMPLE_MESSAGE_LINUX)

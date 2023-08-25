@@ -40,7 +40,7 @@
 
 // remove ROS after Melodic (bw compat for #262)
 #if defined(SIMPLE_MESSAGE_USE_ROS) || defined(ROS)
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #else
 #include "unistd.h"
 #endif
@@ -190,7 +190,7 @@ void MessageManager::spin()
   LOG_INFO("Entering message manager spin loop");
 // remove ROS after Melodic (bw compat for #262)
 #if defined(SIMPLE_MESSAGE_USE_ROS) || defined(ROS)
-  while (ros::ok())
+  while (rclcpp::ok)
 #else
   while (true)
 #endif

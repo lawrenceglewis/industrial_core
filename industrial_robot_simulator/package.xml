@@ -11,7 +11,7 @@
   <url type="website">http://ros.org/wiki/industrial_robot_simulator</url>
   <author>Shaun Edwards</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <exec_depend>control_msgs</exec_depend>
   <exec_depend>industrial_msgs</exec_depend>

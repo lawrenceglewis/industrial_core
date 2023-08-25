@@ -30,7 +30,7 @@
  */
 
 #include "industrial_utils/utils.h"
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include <algorithm>
 
 namespace industrial_utils
@@ -78,10 +78,10 @@ bool findChainJointNames(const urdf::LinkConstSharedPtr &link, bool ignore_fixed
 
   // check for joints directly connected to this link
   const joint_list &joints = link->child_joints;
-  ROS_DEBUG("Found %lu child joints:", joints.size());
+  RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"Found %lu child joints:", joints.size());
   for (joint_list::const_iterator it=joints.begin(); it!=joints.end(); ++it)
   {
-    ROS_DEBUG_STREAM("  " << (*it)->name << ": type " <<  (*it)->type);
+    RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"  " << (*it)->name << ": type " <<  (*it)->type);
     if (ignore_fixed && (*it)->type == urdf::Joint::FIXED)
       continue;
 
@@ -92,7 +92,7 @@ bool findChainJointNames(const urdf::LinkConstSharedPtr &link, bool ignore_fixed
     }
     else
     {
-      ROS_WARN_STREAM("Unable to find chain in URDF.  Branching joints: " << found_joint << " and " << (*it)->name);
+      RCLCPP_WARN(rclcpp::get_logger("rclcpp"),"Unable to find chain in URDF.  Branching joints: " << found_joint << " and " << (*it)->name);
       return false;  // branching tree (multiple valid child-joints)
     }
   }
@@ -100,10 +100,10 @@ bool findChainJointNames(const urdf::LinkConstSharedPtr &link, bool ignore_fixed
   // check for joints connected to children of this link
   const link_list &links = link->child_links;
   std::vector<std::string> sub_joints;
-  ROS_DEBUG("Found %lu child links:", links.size());
+  RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"Found %lu child links:", links.size());
   for (link_list::const_iterator it=links.begin(); it!=links.end(); ++it)
   {
-    ROS_DEBUG_STREAM("  " << (*it)->name);
+    RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"  " << (*it)->name);
     if (!findChainJointNames(*it, ignore_fixed, sub_joints))   // NOTE: recursive call
       return false;
 
@@ -117,7 +117,7 @@ bool findChainJointNames(const urdf::LinkConstSharedPtr &link, bool ignore_fixed
     }
     else
     {
-      ROS_WARN_STREAM("Unable to find chain in URDF.  Branching links: " << found_link << " and " << (*it)->name);
+      RCLCPP_WARN(rclcpp::get_logger("rclcpp"),"Unable to find chain in URDF.  Branching links: " << found_link << " and " << (*it)->name);
       return false;  // branching tree (multiple valid child-joints)
     }
   }

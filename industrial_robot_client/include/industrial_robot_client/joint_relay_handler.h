@@ -36,7 +36,8 @@
 #include <string>
 #include <vector>
 
-#include "ros/ros.h"
+//#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "control_msgs/FollowJointTrajectoryFeedback.h"
 #include "sensor_msgs/JointState.h"
 #include "simple_message/message_handler.h"
@@ -87,9 +88,9 @@ protected:
 
   std::vector<std::string> all_joint_names_;
 
-  ros::Publisher pub_joint_control_state_;
-  ros::Publisher pub_joint_sensor_state_;
-  ros::NodeHandle node_;
+  rclcpp::Publisher pub_joint_control_state_;
+  rclcpp::Publisher pub_joint_sensor_state_;
+  rclcpp::Node node_;
 
   /**
    * \brief Convert joint message into publish message-types

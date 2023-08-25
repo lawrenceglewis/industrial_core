@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 
 project(industrial_trajectory_filters)
 
@@ -38,7 +38,7 @@ add_library(${PROJECT_NAME}
   src/smoothing_trajectory_filter.cpp
   src/uniform_sample_filter.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${orocos_kdl_LIBRARIES})
+ament_target_dependencies(${PROJECT_NAME} ${catkin_LIBRARIES} ${orocos_kdl_LIBRARIES})
 
 
 install(TARGETS ${PROJECT_NAME}
@@ -50,4 +50,4 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
 install(FILES planning_request_adapters_plugin_description.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+  DESTINATION share/${PROJECT_NAME})

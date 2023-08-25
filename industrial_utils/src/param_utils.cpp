@@ -33,7 +33,7 @@
 
 #include "industrial_utils/param_utils.h"
 #include "industrial_utils/utils.h"
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include <urdf/urdfdom_compatibility.h>
 
 namespace industrial_utils
@@ -61,23 +61,23 @@ bool getListParam(const std::string param_name, std::vector<std::string> & list_
         rtn = (rpc_list[i].getType() == XmlRpc::XmlRpcValue::TypeString);
         if (rtn)
         {
-          ROS_INFO_STREAM("Adding " << rpc_list[i] << " to list parameter");
+          RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Adding " << rpc_list[i] << " to list parameter");
           list_param.push_back(static_cast<std::string>(rpc_list[i]));
         }
         else
         {
-          ROS_ERROR_STREAM("List item for: " << param_name << " not of string type");
+          RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"List item for: " << param_name << " not of string type");
         }
       }
     }
     else
     {
-      ROS_ERROR_STREAM("Parameter: " << param_name << " not of list type");
+      RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Parameter: " << param_name << " not of list type");
     }
   }
   else
   {
-    ROS_ERROR_STREAM("Failed to get parameter: " << param_name);
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Failed to get parameter: " << param_name);
   }
 
   return rtn;
@@ -101,11 +101,11 @@ bool getJointNames(const std::string joint_list_param, const std::string urdf_pa
   // 1) Try to read explicit list of joint names
   if (ros::param::has(joint_list_param) && getListParam(joint_list_param, joint_names))
   {
-    ROS_INFO_STREAM("Found user-specified joint names in '" << joint_list_param << "': " << vec2str(joint_names));
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Found user-specified joint names in '" << joint_list_param << "': " << vec2str(joint_names));
     return true;
   }
   else
-    ROS_WARN_STREAM("Unable to find user-specified joint names in '" << joint_list_param << "'");
+    RCLCPP_WARN(rclcpp::get_logger("rclcpp"),"Unable to find user-specified joint names in '" << joint_list_param << "'");
 
   // 2) Try to find joint names from URDF model
   urdf::Model model;
@@ -113,14 +113,14 @@ bool getJointNames(const std::string joint_list_param, const std::string urdf_pa
        && model.initParam(urdf_param)
        && findChainJointNames(model.getRoot(), true, joint_names) )
   {
-    ROS_INFO_STREAM("Using joint names from URDF: '" << urdf_param << "': " << vec2str(joint_names));
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Using joint names from URDF: '" << urdf_param << "': " << vec2str(joint_names));
     return true;
   }
   else
-    ROS_WARN_STREAM("Unable to find URDF joint names in '" << urdf_param << "'");
+    RCLCPP_WARN(rclcpp::get_logger("rclcpp"),"Unable to find URDF joint names in '" << urdf_param << "'");
 
   // 3) Raise an error
-  ROS_ERROR_STREAM(
+  RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
       "Cannot find user-specified joint names. Tried ROS parameter '" << joint_list_param << "'"
       << " and the URDF in '" << urdf_param << "'.");
   return false;

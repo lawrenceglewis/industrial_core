@@ -32,7 +32,7 @@
 #ifndef JOINT_TRAJTORY_ACTION_H
 #define JOINT_TRAJTORY_ACTION_H
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 #include <actionlib/server/action_server.h>
 
 #include <trajectory_msgs/JointTrajectory.h>
@@ -78,7 +78,7 @@ private:
   /**
    * \brief Internal ROS node handle
    */
-  ros::NodeHandle node_;
+  rclcpp::Node node_;
 
   /**
    * \brief Internal action server
@@ -88,7 +88,7 @@ private:
   /**
    * \brief Publishes desired trajectory (typically to the robot driver)
    */
-  ros::Publisher pub_trajectory_command_;
+  rclcpp::Publisher pub_trajectory_command_;
 
   /**
    * \brief Subscribes to trajectory feedback (typically published by the

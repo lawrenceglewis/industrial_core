@@ -36,7 +36,7 @@
 #include <vector>
 #include <string>
 
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include "industrial_msgs/CmdJointTrajectory.h"
 #include "industrial_msgs/StopMotion.h"
 #include "sensor_msgs/JointState.h"
@@ -242,7 +242,7 @@ protected:
 
   TcpClient default_tcp_connection_;
 
-  ros::NodeHandle node_;
+  rclcpp::Node node_;
   SmplMsgConnection* connection_;
   ros::Subscriber sub_cur_pos_;  // handle for joint-state topic subscription
   ros::Subscriber sub_joint_trajectory_; // handle for joint-trajectory topic subscription

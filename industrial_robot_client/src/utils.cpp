@@ -48,7 +48,7 @@ bool isWithinRange(const std::vector<double> & lhs, const std::vector<double> & 
 
   if (lhs.size() != rhs.size())
   {
-    ROS_ERROR_STREAM(__FUNCTION__ << "::lhs size: " << lhs.size() << " does not match rhs size: " << rhs.size());
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),__FUNCTION__ << "::lhs size: " << lhs.size() << " does not match rhs size: " << rhs.size());
     rtn = false;
   }
   else
@@ -83,7 +83,7 @@ bool mapInsert(const std::string & key, double value, std::map<std::string, doub
   // The second value returned form insert is a boolean (true for success)
   if (!insert_rtn.second)
   {
-    ROS_ERROR_STREAM(__FUNCTION__ << "::Failed to insert item into map with key: " << key);
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),__FUNCTION__ << "::Failed to insert item into map with key: " << key);
     rtn = false;
   }
   else
@@ -117,7 +117,7 @@ bool toMap(const std::vector<std::string> & keys, const std::vector<double> & va
   }
   else
   {
-    ROS_ERROR_STREAM(__FUNCTION__ << "::keys size: " << keys.size()
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),__FUNCTION__ << "::keys size: " << keys.size()
                      << " does not match values size: " << values.size());
 
     rtn = false;
@@ -133,7 +133,7 @@ bool isWithinRange(const std::vector<std::string> & keys, const std::map<std::st
 
   if ((keys.size() != rhs.size()) || (keys.size() != lhs.size()))
   {
-    ROS_ERROR_STREAM(__FUNCTION__ << "::Size mistmatch ::lhs size: " << lhs.size() <<
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),__FUNCTION__ << "::Size mistmatch ::lhs size: " << lhs.size() <<
                      " rhs size: " << rhs.size() << " key size: " << keys.size());
 
     rtn = false;
@@ -174,7 +174,7 @@ bool isWithinRange(const std::vector<std::string> & lhs_keys, const std::vector<
   }
   else
   {
-    ROS_ERROR_STREAM(__FUNCTION__ << "::Key vectors are not similar");
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),__FUNCTION__ << "::Key vectors are not similar");
     rtn = false;
   }
   return rtn;

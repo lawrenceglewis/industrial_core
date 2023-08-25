@@ -34,7 +34,8 @@
 
 // remove ROS after Melodic (bw compat for #262)
 #if defined(SIMPLE_MESSAGE_USE_ROS) || defined(ROS)
-#include "ros/ros.h"
+//#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/rclcpp.hpp"
 #endif
 
 #ifdef SIMPLE_MESSAGE_MOTOPLUS
@@ -65,42 +66,42 @@ namespace log_wrapper
 #ifdef _MSC_VER
 
 #define LOG_COMM(...)  \
-  ROS_DEBUG(__VA_ARGS__)
+  RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), __VA_ARGS__)
   
 #define LOG_DEBUG(...)  \
-  ROS_DEBUG(__VA_ARGS__)
+  RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), __VA_ARGS__)
 
 #define LOG_INFO(...)  \
-  ROS_INFO(__VA_ARGS__)
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), __VA_ARGS__)
 
 #define LOG_WARN(...)  \
-  ROS_WARN(__VA_ARGS__)
+  RCLCPP_WARN(rclcpp::get_logger("rclcpp"), __VA_ARGS__)
 
 #define LOG_ERROR(...)  \
-  ROS_ERROR(__VA_ARGS__)
+  RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), __VA_ARGS__)
 
 #define LOG_FATAL(...)  \
-  ROS_FATAL(__VA_ARGS__)
+  RCLCPP_FATAL(rclcpp::get_logger("rclcpp"), __VA_ARGS__)
 
 #else
 
 #define LOG_COMM(format, ...)  \
-  ROS_DEBUG(format, ##__VA_ARGS__)
+  RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), format, ##__VA_ARGS__)
   
 #define LOG_DEBUG(format, ...)  \
-  ROS_DEBUG(format, ##__VA_ARGS__)
+  RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), format, ##__VA_ARGS__)
 
 #define LOG_INFO(format, ...)  \
-  ROS_INFO(format, ##__VA_ARGS__)
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), format, ##__VA_ARGS__)
 
 #define LOG_WARN(format, ...)  \
-  ROS_WARN(format, ##__VA_ARGS__)
+  RCLCPP_WARN(rclcpp::get_logger("rclcpp"), format, ##__VA_ARGS__)
 
 #define LOG_ERROR(format, ...)  \
-  ROS_ERROR(format, ##__VA_ARGS__)
+  RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), format, ##__VA_ARGS__)
 
 #define LOG_FATAL(format, ...)  \
-  ROS_FATAL(FATAL, ##__VA_ARGS__)
+  RCLCPP_FATAL(rclcpp::get_logger("rclcpp"), FATAL, ##__VA_ARGS__)
 
 #endif
 

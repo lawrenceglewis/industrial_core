@@ -36,7 +36,8 @@ using industrial_robot_client::joint_trajectory_action::JointTrajectoryAction;
 int main(int argc, char** argv)
 {
   // initialize node
-  ros::init(argc, argv, "joint_trajectory_action");
+  //ros::init(argc, argv, "joint_trajectory_action");
+  rclcpp::init(argc, argv);
 
   JointTrajectoryAction action;
   action.run();

@@ -46,7 +46,7 @@ namespace industrial_robot_client
 namespace joint_trajectory_interface
 {
 
-#define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
+#define ROS_ERROR_RETURN(rtn,...) do {RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),__VA_ARGS__); return(rtn);} while(0)
 
 bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
 {
@@ -60,17 +60,18 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
   // check for valid parameter values
   if (ip.empty())
   {
-    ROS_ERROR("No valid robot IP address found.  Please set ROS 'robot_ip_address' param");
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"No valid robot IP address found.  Please set ROS 'robot_ip_address' param");
     return false;
   }
   if (port <= 0)
   {
-    ROS_ERROR("No valid robot IP port found.  Please set ROS '~port' param");
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"No valid robot IP port found.  Please set ROS '~port' param");
     return false;
   }
 
   char* ip_addr = strdup(ip.c_str());  // connection.init() requires "char*", not "const char*"
-  ROS_INFO("Joint Trajectory Interface connecting to IP address: '%s:%d'", ip_addr, port);
+  std::string rosInfoMsg = "Joint Trajectory Interface connecting to IP address:" + std::to_string(ip_addr) + ":" + std::to_string(port);
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"),rosInfoMsg);
   default_tcp_connection_.init(ip_addr, port);
   free(ip_addr);
 
@@ -82,7 +83,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
   std::vector<std::string> joint_names;
   if (!getJointNames("controller_joint_names", "robot_description", joint_names))
   {
-    ROS_ERROR("Failed to initialize joint_names.  Aborting");
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Failed to initialize joint_names.  Aborting");
     return false;
   }
 
@@ -99,7 +100,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ve
 
   // try to read velocity limits from URDF, if none specified
   if (joint_vel_limits_.empty() && !industrial_utils::param::getJointVelocityLimits("robot_description", joint_vel_limits_))
-    ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
+    RCLCPP_WARN(rclcpp::get_logger("rclcpp"),"Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
 
   this->srv_stop_motion_ = this->node_.advertiseService("stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
   this->srv_joint_trajectory_ = this->node_.advertiseService("joint_path_command", &JointTrajectoryInterface::jointTrajectoryCB, this);
@@ -130,12 +131,12 @@ bool JointTrajectoryInterface::jointTrajectoryCB(industrial_msgs::CmdJointTrajec
 
 void JointTrajectoryInterface::jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg)
 {
-  ROS_INFO("Receiving joint trajectory message");
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Receiving joint trajectory message");
 
   // check for STOP command
   if (msg->points.empty())
   {
-    ROS_INFO("Empty trajectory received, canceling current trajectory");
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Empty trajectory received, canceling current trajectory");
     trajectoryStop();
     return;
   }
@@ -201,7 +202,7 @@ bool JointTrajectoryInterface::select(const std::vector<std::string>& ros_joint_
     // error-chk: required robot joint not found in ROS joint-list
     if (!is_empty && !is_found)
     {
-      ROS_ERROR("Expected joint (%s) not found in JointTrajectory.  Aborting command.", rbt_joint_names[rbt_idx].c_str());
+      RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Expected joint (%s) not found in JointTrajectory.  Aborting command.", rbt_joint_names[rbt_idx].c_str());
       return false;
     }
 
@@ -241,7 +242,7 @@ bool JointTrajectoryInterface::calc_velocity(const trajectory_msgs::JointTraject
   // check for empty velocities in ROS topic
   if (pt.velocities.empty())
   {
-    ROS_WARN("Joint velocities unspecified.  Using default/safe speed.");
+    RCLCPP_WARN(rclcpp::get_logger("rclcpp"),"Joint velocities unspecified.  Using default/safe speed.");
     *rbt_velocity = default_vel_ratio_;
     return true;
   }
@@ -266,13 +267,13 @@ bool JointTrajectoryInterface::calc_velocity(const trajectory_msgs::JointTraject
     *rbt_velocity = vel_ratios[max_idx];
   else
   {
-    ROS_WARN_ONCE("Joint velocity-limits unspecified.  Using default velocity-ratio.");
+    RCLCPP_WARN_ONCE(rclcpp::get_logger("rclcpp"),"Joint velocity-limits unspecified.  Using default velocity-ratio.");
     *rbt_velocity = default_vel_ratio_;
   }
 
   if ( (*rbt_velocity < 0) || (*rbt_velocity > 1) )
   {
-    ROS_WARN("computed velocity (%.1f %%) is out-of-range.  Clipping to [0-100%%]", *rbt_velocity * 100);
+    RCLCPP_WARN(rclcpp::get_logger("rclcpp"),"computed velocity (%.1f %%) is out-of-range.  Clipping to [0-100%%]", *rbt_velocity * 100);
     *rbt_velocity = std::min(1.0, std::max(0.0, *rbt_velocity));  // clip to [0,1]
   }
   
@@ -317,10 +318,10 @@ void JointTrajectoryInterface::trajectoryStop()
   JointTrajPtMessage jMsg;
   SimpleMessage msg, reply;
 
-  ROS_INFO("Joint trajectory handler: entering stopping state");
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Joint trajectory handler: entering stopping state");
   jMsg.setSequence(SpecialSeqValues::STOP_TRAJECTORY);
   jMsg.toRequest(msg);
-  ROS_DEBUG("Sending stop command");
+  RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"Sending stop command");
   this->connection_->sendAndReceiveMsg(msg, reply);
 }
 

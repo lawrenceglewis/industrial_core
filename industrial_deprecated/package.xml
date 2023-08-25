@@ -15,5 +15,8 @@
   <license>BSD</license>
   <url type="website">http://ros.org/wiki/industrial_deprecated</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

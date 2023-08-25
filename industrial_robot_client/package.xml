@@ -13,7 +13,7 @@
   <license>BSD</license>
   <url type="website">http://ros.org/wiki/industrial_robot_client</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>actionlib_msgs</depend>
   <depend>actionlib</depend>
@@ -32,6 +32,11 @@
        drag in UI dependencies where the rest of IRC doesn't need it -->
   <!-- <exec_depend>rviz</exec_depend> -->
 
+  <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>roslaunch</test_depend>
   <test_depend>rosunit</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

@@ -13,17 +13,21 @@
   <license>BSD</license>
   <url type="website">http://ros.org/wiki/industrial_msgs</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
 
-  <build_depend>message_generation</build_depend>
+  <!-- <build_depend>message_generation</build_depend>
   <build_export_depend>message_runtime</build_export_depend>
-  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>message_runtime</exec_depend> -->
 
   <depend>std_msgs</depend>
   <depend>trajectory_msgs</depend>
 
+
   <export>
     <architecture_independent />
+    <build_type>ament_cmake</build_type>
   </export>
+
+
 </package>

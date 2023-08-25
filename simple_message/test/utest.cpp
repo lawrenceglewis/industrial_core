@@ -532,75 +532,12 @@ spinFunc(void* arg)
   return NULL;
 }
 
-/*  Commenting out this test because build shows "unstable" with disabled tests
-// See https://github.com/ros-industrial/industrial_core/issues/149 for details
-TEST(DISABLED_MessageManagerSuite, tcp)
-{
-  const int port = TEST_PORT_BASE + 201;
-  char ipAddr[] = "127.0.0.1";
-
-  TestClient* client = new TestClient();
-  TestServer server;
-  SimpleMessage pingRequest, pingReply;
-  MessageManager msgManager;
-
-  // MessageManager uses ros::ok, which needs ros spinner
-  ros::AsyncSpinner spinner(0);
-  spinner.start();
-
-  ASSERT_TRUE(pingRequest.init(StandardMsgTypes::PING, CommTypes::SERVICE_REQUEST, ReplyTypes::INVALID));
-
-  // TCP Socket testing
-
-  // Construct server
-  ASSERT_TRUE(server.init(port));
-
-  // Construct a client
-  ASSERT_TRUE(client->init(&ipAddr[0], port));
-
-  // Connect server and client
-  pthread_t serverConnectThrd;
-  pthread_create(&serverConnectThrd, NULL, connectServerFunc, &server);
-
-  ASSERT_TRUE(client->makeConnect());
-  pthread_join(serverConnectThrd, NULL);
-
-  // Listen for client connection, init manager and start thread
-  ASSERT_TRUE(msgManager.init(&server));
-
-  // TODO: The message manager is not thread safe (threads are used for testing,
-  // but running the message manager in a thread results in errors when the
-  // underlying connection is deconstructed before the manager
-  //boost::thread spinSrvThrd(boost::bind(&MessageManager::spin, &msgManager));
-  pthread_t spinSrvThrd;
-  pthread_create(&spinSrvThrd, NULL, spinFunc, &msgManager);
-
-  // Ping the server
-  ASSERT_TRUE(client->sendMsg(pingRequest));
-  ASSERT_TRUE(client->receiveMsg(pingReply));
-  ASSERT_TRUE(client->sendAndReceiveMsg(pingRequest, pingReply));
-
-  // Delete client and try to reconnect
-
-  delete client;
-  sleep(10); //Allow time for client to destruct and free up port
-  client = new TestClient();
-
-  ASSERT_TRUE(client->init(&ipAddr[0], port));
-  ASSERT_TRUE(client->makeConnect());
-  ASSERT_TRUE(client->sendAndReceiveMsg(pingRequest, pingReply));
-
-  pthread_cancel(spinSrvThrd);
-  pthread_join(spinSrvThrd, NULL);
-
-  delete client;
-}
-*/
 
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "test");  // some tests need ROS framework
+  //ros::init(argc, argv, "test");  // some tests need ROS framework
+  rclcpp::init(argc, argv);
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

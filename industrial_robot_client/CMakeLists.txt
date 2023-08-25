@@ -1,13 +1,16 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 
 project(industrial_robot_client)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(catkin REQUIRED COMPONENTS actionlib actionlib_msgs
   control_msgs industrial_msgs industrial_utils roscpp sensor_msgs
   simple_message std_msgs trajectory_msgs urdf)
+
+find_package(ament_cmake)
+find_package()
 
 find_package(Boost REQUIRED COMPONENTS system thread)
 
@@ -66,18 +69,18 @@ install(TARGETS ${PROJECT_NAME}_dummy
 #
 # Due to catkin dependency limitations, higher-level code must
 # explicitly link to the desired industrial_robot_client library:
-#    target_link_libraries(my_node industrial_robot_client)
+#    ament_target_dependencies(my_node industrial_robot_client)
 #      or
-#    target_link_libraries(my_node industrial_robot_client_bswap)
+#    ament_target_dependencies(my_node industrial_robot_client_bswap)
 #
 
 add_library(${PROJECT_NAME} ${SRC_FILES})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} simple_message)
+ament_target_dependencies(${PROJECT_NAME} ${catkin_LIBRARIES} simple_message)
 target_compile_definitions(${PROJECT_NAME} PUBLIC
   ${simple_message_DEFINITIONS})
 
 add_library(${PROJECT_NAME}_bswap ${SRC_FILES})
-target_link_libraries(${PROJECT_NAME}_bswap ${catkin_LIBRARIES} simple_message_bswap)
+ament_target_dependencies(${PROJECT_NAME}_bswap ${catkin_LIBRARIES} simple_message_bswap)
 target_compile_definitions(${PROJECT_NAME}_bswap PUBLIC
   ${simple_message_bswap_DEFINITIONS})
 
@@ -87,7 +90,7 @@ target_compile_definitions(${PROJECT_NAME}_bswap PUBLIC
 
 add_executable(robot_state
   src/generic_robot_state_node.cpp)
-target_link_libraries(robot_state 
+ament_target_dependencies(robot_state 
   ${PROJECT_NAME}
   simple_message
   ${catkin_LIBRARIES})
@@ -96,7 +99,7 @@ target_compile_definitions(robot_state PRIVATE
 
 add_executable(motion_streaming_interface
   src/generic_joint_streamer_node.cpp)
-target_link_libraries(motion_streaming_interface 
+ament_target_dependencies(motion_streaming_interface 
   ${PROJECT_NAME} 
   simple_message
   ${catkin_LIBRARIES})
@@ -105,7 +108,7 @@ target_compile_definitions(motion_streaming_interface PRIVATE
 
 add_executable(motion_download_interface
   src/generic_joint_downloader_node.cpp)
-target_link_libraries(motion_download_interface 
+ament_target_dependencies(motion_download_interface 
   ${PROJECT_NAME} 
   simple_message
   ${catkin_LIBRARIES})
@@ -118,7 +121,7 @@ target_compile_definitions(motion_download_interface PRIVATE
 
 add_executable(robot_state_bswap
   src/generic_robot_state_node.cpp)
-target_link_libraries(robot_state_bswap 
+ament_target_dependencies(robot_state_bswap 
   ${PROJECT_NAME}_bswap 
   simple_message_bswap
   ${catkin_LIBRARIES})
@@ -127,7 +130,7 @@ target_compile_definitions(robot_state_bswap PRIVATE
 
 add_executable(motion_streaming_interface_bswap
   src/generic_joint_streamer_node.cpp)
-target_link_libraries(motion_streaming_interface_bswap 
+ament_target_dependencies(motion_streaming_interface_bswap 
   ${PROJECT_NAME}_bswap  
   simple_message_bswap
   ${catkin_LIBRARIES})
@@ -136,7 +139,7 @@ target_compile_definitions(motion_streaming_interface_bswap PRIVATE
 
 add_executable(motion_download_interface_bswap
   src/generic_joint_downloader_node.cpp)
-target_link_libraries(motion_download_interface_bswap 
+ament_target_dependencies(motion_download_interface_bswap 
   ${PROJECT_NAME}_bswap  
   simple_message_bswap
   ${catkin_LIBRARIES})
@@ -150,7 +153,7 @@ target_compile_definitions(motion_download_interface_bswap PRIVATE
 add_executable(joint_trajectory_action 
   src/generic_joint_trajectory_action_node.cpp
   src/joint_trajectory_action.cpp)
-target_link_libraries(joint_trajectory_action PRIVATE
+ament_target_dependencies(joint_trajectory_action PRIVATE
   ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ##########
@@ -159,7 +162,7 @@ target_link_libraries(joint_trajectory_action PRIVATE
 # Testing - Only performed on normal (non byte swapped library)
 if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(utest_robot_client test/utest.cpp)
-  target_link_libraries(utest_robot_client
+  ament_target_dependencies(utest_robot_client
     ${PROJECT_NAME}
     ${catkin_LIBRARIES})
 endif()
@@ -200,4 +203,4 @@ install(
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
 install(DIRECTORY config launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+  DESTINATION share/${PROJECT_NAME})

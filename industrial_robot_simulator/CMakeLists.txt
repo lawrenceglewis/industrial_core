@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 
 project(industrial_robot_simulator)
 
-find_package(catkin REQUIRED)
+find_package(ament_cmake REQUIRED)
 
 catkin_package()
 
@@ -21,4 +21,4 @@ endif()
 
 catkin_install_python(PROGRAMS ${PROJECT_NAME} DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-install(DIRECTORY launch/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
+install(DIRECTORY launch/ DESTINATION share/${PROJECT_NAME}/launch)

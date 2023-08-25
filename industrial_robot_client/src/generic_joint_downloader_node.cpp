@@ -36,7 +36,8 @@ using industrial_robot_client::joint_trajectory_downloader::JointTrajectoryDownl
 int main(int argc, char** argv)
 {
   // initialize node
-  ros::init(argc, argv, "motion_interface");
+  //ros::init(argc, argv, "motion_interface");
+  rclcpp::init(argc, argv);
 
   // launch the default JointTrajectoryDownloader connection/handlers
   JointTrajectoryDownloader motionInterface;

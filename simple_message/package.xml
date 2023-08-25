@@ -15,7 +15,7 @@
   <license>BSD</license>
   <url type="website">http://ros.org/wiki/simple_message</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>roscpp</depend>
   <depend>industrial_msgs</depend>

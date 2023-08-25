@@ -39,7 +39,7 @@
 #include <class_loader/class_loader.hpp>
 
 #include <industrial_trajectory_filters/smoothing_trajectory_filter.h>
-#include <ros/ros.h>  // required for NodeHandle
+#include "rclcpp/rclcpp.hpp" // required for NodeHandle
 #include <ros/console.h>
 
 namespace industrial_trajectory_filters
@@ -67,9 +67,9 @@ public:
   * \brief load parameters from a certain namespace
   */
 #if MOVEIT_VERSION_MAJOR >= 1 && MOVEIT_VERSION_MINOR >= 1
-  virtual void initialize(const ros::NodeHandle& node_handle) override
+  virtual void initialize(const rclcpp::Node& node_handle) override
 #else
-  virtual void initialize(const ros::NodeHandle& node_handle)
+  virtual void initialize(const rclcpp::Node& node_handle)
 #endif
   {
       nh_ = node_handle;
@@ -85,7 +85,7 @@ public:
 
     // see if a new set of filter parameters is on the parameter server, if so, install them
     if (!nh_.getParam(FILTER_PARAMETER_NAME_, filter_name_)){
-      ROS_INFO_STREAM("Param '" << FILTER_PARAMETER_NAME_ << "' was not set. Using default filter values " );
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Param '" << FILTER_PARAMETER_NAME_ << "' was not set. Using default filter values " );
     }
     else{ // base filter name exists
       std::vector<double> temp_coef;
@@ -97,11 +97,11 @@ public:
 	}
       }
       else{
-	ROS_INFO_STREAM("Could not read filter, using default filter coefficients");
+	RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Could not read filter, using default filter coefficients");
       }
     }
     if(!smoothing_filter_.init(filter_coef_))
-      ROS_ERROR("Initialization error on smoothing filter. Requires an odd number of coeficients");
+      RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Initialization error on smoothing filter. Requires an odd number of coeficients");
     
   };
 
@@ -134,9 +134,9 @@ public:
     // do anything after calling the nested planner or adapters here
     if (result && res.trajectory_) // successful plan
     {
-      ROS_DEBUG("Running '%s'", getDescription().c_str()); // inform the user 
+      RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"Running '%s'", getDescription().c_str()); // inform the user 
       if (!smoothing_filter_.applyFilter(*res.trajectory_)) {// do the smoothing
-	ROS_ERROR("Smoothing filter of the solution path failed. Filter Not Initialized ");
+	RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Smoothing filter of the solution path failed. Filter Not Initialized ");
       }
     }// end of if successful plan
     return result;
@@ -144,7 +144,7 @@ public:
   
 
 private:
-  ros::NodeHandle nh_;
+  rclcpp::Node nh_;
   industrial_trajectory_filters::SmoothingTrajectoryFilter smoothing_filter_;
   std::string filter_name_;
   std::vector<double> filter_coef_;

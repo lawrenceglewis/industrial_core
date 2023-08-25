@@ -10,7 +10,7 @@
   <license>BSD</license>
   <url type="website">http://ros.org/wiki/industrial_core</url>
   
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <exec_depend>simple_message</exec_depend>
   <exec_depend>industrial_msgs</exec_depend>
@@ -21,6 +21,6 @@
   <exec_depend>industrial_trajectory_filters</exec_depend>
 
   <export>
-    <metapackage/>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

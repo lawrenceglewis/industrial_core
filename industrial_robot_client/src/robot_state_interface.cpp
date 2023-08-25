@@ -60,17 +60,17 @@ bool RobotStateInterface::init(std::string default_ip, int default_port)
   // check for valid parameter values
   if (ip.empty())
   {
-    ROS_ERROR("No valid robot IP address found.  Please set ROS 'robot_ip_address' param");
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"No valid robot IP address found.  Please set ROS 'robot_ip_address' param");
     return false;
   }
   if (port <= 0)
   {
-    ROS_ERROR("No valid robot IP port found.  Please set ROS '~port' param");
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"No valid robot IP port found.  Please set ROS '~port' param");
     return false;
   }
 
   char* ip_addr = strdup(ip.c_str());  // connection.init() requires "char*", not "const char*"
-  ROS_INFO("Robot state connecting to IP address: '%s:%d'", ip_addr, port);
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Robot state connecting to IP address: '%s:%d'", ip_addr, port);
   default_tcp_connection_.init(ip_addr, port);
   free(ip_addr);
 
@@ -82,7 +82,7 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
   std::vector<std::string> joint_names;
   if (!getJointNames("controller_joint_names", "robot_description", joint_names))
   {
-    ROS_ERROR("Failed to initialize joint_names.  Aborting");
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Failed to initialize joint_names.  Aborting");
     return false;
   }
 

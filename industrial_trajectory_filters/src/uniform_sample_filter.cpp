@@ -31,7 +31,7 @@
 
 #include <industrial_trajectory_filters/uniform_sample_filter.h>
 #include <kdl/velocityprofile_spline.hpp>
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 
 using namespace industrial_trajectory_filters;
 
@@ -41,7 +41,7 @@ template<typename T>
   UniformSampleFilter<T>::UniformSampleFilter() :
       industrial_trajectory_filters::FilterBase<T>()
   {
-    ROS_INFO_STREAM("Constructing N point filter");
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Constructing N point filter");
     sample_duration_ = DEFAULT_SAMPLE_DURATION;
     this->filter_name_ = "UniformSampleFilter";
     this->filter_type_ = "UniformSampleFilter";
@@ -57,9 +57,9 @@ template<typename T>
   {
     if (!this->nh_.getParam("sample_duration", sample_duration_))
     {
-      ROS_WARN_STREAM( "UniformSampleFilter, params has no attribute sample_duration.");
+      RCLCPP_WARN(rclcpp::get_logger("rclcpp"), "UniformSampleFilter, params has no attribute sample_duration.");
     }
-    ROS_INFO_STREAM("Using a sample_duration value of " << sample_duration_);
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Using a sample_duration value of " << sample_duration_);
 
     return true;
   }
@@ -82,17 +82,17 @@ template<typename T>
 
     while (interpolated_time < duration_in)
     {
-      ROS_DEBUG_STREAM("Interpolated time: " << interpolated_time);
+      RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"Interpolated time: " << interpolated_time);
       // Increment index until the interpolated time is past the start time.
       while (interpolated_time > trajectory_in.request.trajectory.points[index_in + 1].time_from_start.toSec())
       {
-        ROS_DEBUG_STREAM(
+        RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),
             "Interpolated time: " << interpolated_time << ", next point time: " << (trajectory_in.request.trajectory.points[index_in + 1].time_from_start.toSec()));
-        ROS_DEBUG_STREAM("Incrementing index");
+        RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"Incrementing index");
         index_in++;
         if (index_in >= size_in)
         {
-          ROS_ERROR_STREAM(
+          RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
               "Programming error, index: " << index_in << ", greater(or equal) to size: " << size_in << " input duration: " << duration_in << " interpolated time:)" << interpolated_time);
           return false;
         }
@@ -101,7 +101,7 @@ template<typename T>
       p2 = trajectory_in.request.trajectory.points[index_in + 1];
       if (!interpolatePt(p1, p2, interpolated_time, interp_pt))
       {
-        ROS_ERROR_STREAM("Failed to interpolate point");
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Failed to interpolate point");
         return false;
       }
       trajectory_out.request.trajectory.points.push_back(interp_pt);
@@ -109,7 +109,7 @@ template<typename T>
 
     }
 
-    ROS_INFO_STREAM(
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"),
         "Interpolated time exceeds original trajectory (quitting), original: " << duration_in << " final interpolated time: " << interpolated_time);
     p2 = trajectory_in.request.trajectory.points.back();
     p2.time_from_start = ros::Duration(interpolated_time);
@@ -118,7 +118,7 @@ template<typename T>
     // large percentage of the trajectory duration (not likely).
     trajectory_out.request.trajectory.points.push_back(p2);
 
-    ROS_INFO_STREAM(
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"),
         "Uniform sampling, resample duraction: " << sample_duration_ << " input traj. size: " << trajectory_in.request.trajectory.points.size() << " output traj. size: " << trajectory_out.request.trajectory.points.size());
 
     success = true;
@@ -134,7 +134,7 @@ template<typename T>
     double p1_time_from_start = p1.time_from_start.toSec();
     double p2_time_from_start = p2.time_from_start.toSec();
 
-    ROS_DEBUG_STREAM("time from start: " << time_from_start);
+    RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"time from start: " << time_from_start);
 
     if (time_from_start >= p1_time_from_start && time_from_start <= p2_time_from_start)
     {
@@ -150,7 +150,7 @@ template<typename T>
           // resample duration is less that the actual duration, which it might
           // be sometimes)
           KDL::VelocityProfile_Spline spline_calc;
-          ROS_DEBUG_STREAM( "---------------Begin interpolating joint point---------------");
+          RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), "---------------Begin interpolating joint point---------------");
 
           for (size_t i = 0; i < p1.positions.size(); ++i)
           {
@@ -158,38 +158,38 @@ template<typename T>
             double time_from_p1 = time_from_start - p1.time_from_start.toSec();
             double time_from_p1_to_p2 = p2_time_from_start - p1_time_from_start;
 
-            ROS_DEBUG_STREAM("time from p1: " << time_from_p1);
-            ROS_DEBUG_STREAM( "time_from_p1_to_p2: " << time_from_p1_to_p2);
+            RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),"time from p1: " << time_from_p1);
+            RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), "time_from_p1_to_p2: " << time_from_p1_to_p2);
 
             spline_calc.SetProfileDuration(p1.positions[i], p1.velocities[i], p1.accelerations[i], p2.positions[i],
                                            p2.velocities[i], p2.accelerations[i], time_from_p1_to_p2);
 
             ros::Duration time_from_start_dur(time_from_start);
-            ROS_DEBUG_STREAM( "time from start_dur: " << time_from_start_dur);
+            RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), "time from start_dur: " << time_from_start_dur);
 
             interp_pt.time_from_start = time_from_start_dur;
             interp_pt.positions[i] = spline_calc.Pos(time_from_p1);
             interp_pt.velocities[i] = spline_calc.Vel(time_from_p1);
             interp_pt.accelerations[i] = spline_calc.Acc(time_from_p1);
 
-            ROS_DEBUG_STREAM(
+            RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),
                 "p1.pos: " << p1.positions[i] << ", vel: " << p1.velocities[i] << ", acc: " << p1.accelerations[i] << ", tfs: " << p1.time_from_start);
 
-            ROS_DEBUG_STREAM(
+            RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),
                 "p2.pos: " << p2.positions[i] << ", vel: " << p2.velocities[i] << ", acc: " << p2.accelerations[i] << ", tfs: " << p2.time_from_start);
 
-            ROS_DEBUG_STREAM(
+            RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"),
                 "interp_pt.pos: " << interp_pt.positions[i] << ", vel: " << interp_pt.velocities[i] << ", acc: " << interp_pt.accelerations[i] << ", tfs: " << interp_pt.time_from_start);
           }
-          ROS_DEBUG_STREAM( "---------------End interpolating joint point---------------");
+          RCLCPP_DEBUG(rclcpp::get_logger("rclcpp"), "---------------End interpolating joint point---------------");
           rtn = true;
         }
         else
         {
-          ROS_ERROR_STREAM("Trajectory point size mismatch");
-          ROS_ERROR_STREAM(
+          RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),"Trajectory point size mismatch");
+          RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
               "Trajectory point 1, pos: " << p1.positions.size() << " vel: " << p1.velocities.size() << " acc: " << p1.accelerations.size());
-          ROS_ERROR_STREAM(
+          RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
               "Trajectory point 2, pos: " << p2.positions.size() << " vel: " << p2.velocities.size() << " acc: " << p2.accelerations.size());
           rtn = false;
         }
@@ -197,14 +197,14 @@ template<typename T>
       }
       else
       {
-        ROS_ERROR_STREAM(
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
             "Trajectory point not fully defined, pos: " << p1.positions.size() << " vel: " << p1.velocities.size() << " acc: " << p1.accelerations.size());
         rtn = false;
       }
     }
     else
     {
-      ROS_ERROR_STREAM(
+      RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
           "Time: " << time_from_start << " not between interpolation point times[" << p1.time_from_start.toSec() << "," << p2.time_from_start.toSec() << "]");
       rtn = false;
     }
